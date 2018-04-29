@@ -4,10 +4,11 @@ import json
 import sys
 import time
 from datetime import datetime
+import unicodedata
 
 data = json.load(open('data.json'))
 NEWSAPI_KEY = data["key"]
-REQUEST_SOURCES = data["sources"]
+REQUEST_SOURCES = data["sources"].__str__()
 REQUEST_PAGESIZE = 100
 
 class ArticleObj:
@@ -26,7 +27,8 @@ class ArticleObj:
         return (self.publishedAt < other.publishedAt)
     def __str__(self):
         self.printed = True
-        return( self.title + "\n\t" + self.description + "\n\t" + self.source + " (" + self.author + ", " + self.publishedAt + ")\n\turl: " + self.url + "\n")
+        ret = unicodedata.normalize('NFC', self.title + "\n\t" + self.description + "\n\t" + self.source + " (" + self.author + ", " + self.publishedAt + ")\n\turl: " + self.url + "\n").encode('ascii', 'ignore')
+        return ret
 
 newsapi = NewsApiClient(api_key=NEWSAPI_KEY)
 headlines = None
